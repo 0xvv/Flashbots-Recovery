@@ -1,34 +1,32 @@
-# Gelato Recovery
+# Example exit queue tickets recovery
 
-I created a flashbots bundle to recover $44K worth of unclaimed Gelato ICO tokens from a **compromised wallet**. This is the source code to this [Twitter thread](https://twitter.com/impranavm_/status/1512758634954240000).
+This script was used to rescue funds waiting to be withdrawn on the Kiln Onchain V2 Exit Queue to recover $7K worth of ETH from a **compromised wallet**.
 
 ### The Problem
 - The **compromised wallet** has had it's private key leaked, a malicoius individual set up a bot to monitor for incoming transactions and to steal tokens as soon as they are deposited to the compromised address. 
-- To claim the ICO airdrop the compromised wallet needs to be seeded with enough ETH to pay for the gas fees (without the bots stealing the ETH as soon as it is deposited). 
+- To claim the ETH from the exit queue the compromised wallet needs to be seeded with enough ETH to pay for the gas fees (without the bots stealing the ETH as soon as it is deposited). 
 
 The solution is to send transactions to seed + claim + withdraw all in the **same block**. We can do this by sending these transactions as a bundled to the flashbot network using the [ethers-provider-flashbots-bundle](https://www.npmjs.com/package/@flashbots/ethers-provider-bundle) package.
 
 ## Transactions 
 1. Send funds from `funding_wallet` to `compromised_wallet` to cover gas for claiming + transfering
-2. Claim Gelato ICO tokens from `compromised_wallet` 
-3. Transfer claimed Gelato tokens from `compromised_wallet` to `ledger_wallet`
-4. Transfer all unused ETH from `compromised_wallet` to `funding_wallet`
+2. Claim the exit queue ticket from `compromised_wallet` 
+3. Transfer claimed ETH tokens from `compromised_wallet` to `ledger_wallet`
 
 ## Proof Of Transactions 
-The transactions can be seen bundled together in block [14488296](https://etherscan.io/txs?block=14488296&p=10)
-![Transactions In Block 14488296](./Block_14488296.png)
+The transactions can be seen bundled together in block [19663505](https://etherscan.io/txs?block=19663505&p=4)
+![Transactions In Block 19663505](./bundle.png)
 
 ### Transaction Hashes
 | Transaction                                                            | Hash                                                                                                                                                             |
 | -----------                                                            | -----------                                                                                                                                                      |
-| Funding `compomised_wallet` using `funding_wallet`                     | [0xdd4608...e668d5](https://etherscan.io/tx/0xdd4608a77bf59afae165d6d9450ab03fd256d4f47a3f152928893810c5e668d5)                                                  |
- Claiming Gelato tokens to `compromised_wallet`                       | [0xf9676c...479c50](https://etherscan.io/tx/0xf76ce7c4c0ac8a68cae7417e230db2826e501a1abc731c620d8b2990479c50) |
-| Withdrawing Gelato tokens from `compromised_wallet` to `ledger_wallet` | [0x8d4da8...7cb7f7](https://etherscan.io/tx/0xf9676ce7c4c0ac8a68cae7417e230db2826e501a1abc731c620d8b2990479c50) |
+| Funding `compomised_wallet` using `funding_wallet`                     | [0xba0c37...1da10e](https://etherscan.io/tx/0xba0c37f4d519b34728358ba9a000ad9c69c5fc8f3169609c66b5cc397b1da10e)  |
+Claiming the exit ticket to `compromised_wallet`                        | [0x4e6945...013470](https://etherscan.io/tx/0x4e6945b4a4356b21302759c97a96e3a973374d3abc675584657b2ee472013470) |
+| Withdrawing ETH from `compromised_wallet` to `ledger_wallet`           | [0x172b1a...5bf065](https://etherscan.io/tx/0x172b1af3198c444e810858bc39388df14b77fa723bec1d57c771dd911a5bf065)  |
 
 ### Contracts/Addresses In Play
 | Contract/Account Name     | Address                                                                                                               |
 | -----------               | -----------                                                                                                           |
-| Gelato ICO claim contract | [0x5898D2aE0745c8d09762Bac50fd9F34A2a95A563](https://etherscan.io/address/0x5898D2aE0745c8d09762Bac50fd9F34A2a95A563) |
-| Gelato token contract     | [0x15b7c0c907e4C6b9AdaAaabC300C08991D6CEA05](https://etherscan.io/address/0x15b7c0c907e4C6b9AdaAaabC300C08991D6CEA05) |
-| Compromised Wallet        | [0xbC79c7139C87df965F0F4C24747F326D1864C5aF](https://etherscan.io/address/0xbC79c7139C87df965F0F4C24747F326D1864C5aF) |
-| Funding Wallet            | [0xc1F8713A20734059246b00d0e524F24fe9Ac7A8B](https://etherscan.io/address/0xc1F8713A20734059246b00d0e524F24fe9Ac7A8B) |
+| Exit queue contract       | [0x8d6Fd650500f82c7D978a440348e5a9b886943bF](https://etherscan.io/address/0x8d6Fd650500f82c7D978a440348e5a9b886943bF) |
+| Compromised Wallet        | [0xffCB8D87dAcc4BDE40Dda52b5a81eB25d094091e](https://etherscan.io/address/0xffCB8D87dAcc4BDE40Dda52b5a81eB25d094091e) |
+| Funding Wallet            | [0x7E72F7856465f64908C9a9c000E133ACb128F979](https://etherscan.io/address/0x7E72F7856465f64908C9a9c000E133ACb128F979) |
